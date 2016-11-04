@@ -9,6 +9,8 @@
 package main
 
 import (
+    "net"
+    "bufio"
     "log"
     "fmt"
     "gopkg.in/zabawaba99/firego.v1"
