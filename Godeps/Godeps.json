@@ -1,10 +1,7 @@
 {
-	"ImportPath": "github.com/ktung/smartrescue-server",
-	"GoVersion": "go1.6",
+	"ImportPath": "github.com/haagor/smartrescue-server",
+	"GoVersion": "go1.2",
 	"GodepVersion": "v75",
-	"Packages": [
-		"./..."
-	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/zabawaba99/firego/sync",
