@@ -11,3 +11,5 @@ deploy:
   app: morning-beyond-41458
   on:
     repo: Salah06/SmartRescueServer
+script:
+  go test .
