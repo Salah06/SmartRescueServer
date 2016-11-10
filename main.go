@@ -50,7 +50,6 @@ func CheckError(err error) {
     }
 }
 
-
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     b,err := ioutil.ReadAll(r.Body)
     if err != nil {
