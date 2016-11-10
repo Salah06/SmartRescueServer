@@ -8,4 +8,4 @@ install:
 deploy:
   provider: heroku
   api_key:
-    secure: "https://morning-beyond-41458.herokuapp.com/"
+    secure: "ffe6e2ab-8a28-45aa-9408-f1a82f184a12"
