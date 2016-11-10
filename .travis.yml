@@ -5,7 +5,7 @@ install:
   - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
   - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
   
-deploy:
-  provider: heroku
-  api_key:
-    secure: "ffe6e2ab-8a28-45aa-9408-f1a82f184a12"
+#deploy:
+#  provider: heroku
+#  api_key:
+#    secure: "ffe6e2ab-8a28-45aa-9408-f1a82f184a12"
