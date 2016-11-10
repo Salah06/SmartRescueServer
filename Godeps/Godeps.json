@@ -1,6 +1,6 @@
 {
-	"ImportPath": "github.com/haagor/smartrescue-server",
-	"GoVersion": "go1.7.3",
+	"ImportPath": "github.com/ktung/smartrescue-server",
+	"GoVersion": "go1.7",
 	"GodepVersion": "v75",
 	"Deps": [
 		{

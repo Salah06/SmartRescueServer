@@ -14,11 +14,11 @@ import (
     "log"
     "fmt"
     "gopkg.in/zabawaba99/firego.v1"
+    "net/http"
+    "io/ioutil"
 )
 
-
-var f = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
-// var f = firego.New("https://testrescue-d8b04.firebaseio.com/", nil)
+var f = firego.New("https://testrescue-d8b04.firebaseio.com/", nil)
 
 func pushValue() {
     v := "bar"
@@ -50,36 +50,20 @@ func CheckError(err error) {
     }
 }
 
-func handleConnection(conn net.Conn) {
-    defer conn.Close()
 
-    reader := bufio.NewReader(conn)
-    for {
-        line,err := reader.ReadString('\n')
-        if err != nil {
-            log.Println(err)
-            return
-        }
-        fmt.Fprintf(conn, "You said => %s", line);
+func handleJavaClient(w http.ResponseWriter, r *http.Request) {
+    b,err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        log.Fatal(err)
     }
+    fmt.Printf("%s",b)
 }
 
 func main() {
     //f.Auth("null")
-    pushValue()
+    //pushValue()
     //getValue()
 
-    listener, err := net.Listen("tcp", "localhost:1234")
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    for {
-        conn, err := listener.Accept()
-        if err != nil {
-            log.Println(err)
-            continue
-        }
-        go handleConnection(conn)
-    }
+    http.HandleFunc("/", handleJavaClient)
+    http.ListenAndServe(":1234", nil)
 }

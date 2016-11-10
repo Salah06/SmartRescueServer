@@ -4,8 +4,10 @@ go:
 install:
   - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
   - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
-  
-#deploy:
-#  provider: heroku
-#  api_key:
-#    secure: "ffe6e2ab-8a28-45aa-9408-f1a82f184a12"
+deploy:
+  provider: heroku
+  api_key:
+    secure: dVG2H+nvKpr+vF9KImjW2umB/FMqj2mjGy2RmSMFVwgru6IsAUQwA4mZqqa16J99cLwoCpQV/9MybuIqc5Q7sStuk/gOsaJ6N6wKhGprywvfNoQFXsFQIKlqCiHIUmzsS9Ws8+cctn6W39Bz6Q31hi0qqoNivHNEMzxHt8ro1KhXy6esvnQsJyX8xJPUyQcv3THbgQVlO7FPGTNZ/y4wspxKoUyh7nT4XtCQnQwVC8p4g7P2D2+C/E4X9HzHHnBcPgPX7vK0ZHpabpXajALZymXSoxdWgwZbqBD3VEByZfH16YBhPUeyDPyCfBTB+IuBJ/rPGPA8YUKV/xoksfm7twNlFCbIspDmozCEq2JCWHbYxUOVRvsz5Zs6eWjNs6whwsoTg7fzzJuprrTUSVVIm1DaGCy+F0biUl3k6oRI0bKn6uk7LVp0qi0dsrRzDBoSVOSQYLT8Y7mmWQnphfdKnFVNBm1XHAgs7fELsU7ULL2bS4vreThJdDMYL5E/UoS85/bG6wkNEU3TpzrIhdXGcysf34OVfzasvn7eyHGwkzGoGfBQt42ka/9KBlakCV9/9eLW2HBELRW8l6RQbH7T52N7GTGSwyhZgw2V+7vHQJ/xDHqao39tAHa/aHrfdN1IDICxo2wnTc/K2+yxYClc46dgIxYjh1SsCLKoEyfEz0s=
+  app: morning-beyond-41458
+  on:
+    repo: Salah06/SmartRescueServer
