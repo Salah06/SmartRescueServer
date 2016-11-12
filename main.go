@@ -17,9 +17,11 @@ import (
     "net/http"
     "io/ioutil"
     "os"
+    "bytes"
 )
 
 var f = firego.New("https://testrescue-d8b04.firebaseio.com/", nil)
+var token string
 
 func pushValue() {
     v := "bar"
@@ -59,13 +61,22 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     fmt.Printf("%s",b)
 }
 
+func handleAndroid(w http.ResponseWriter, r *http.Request) {
+    b,err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        log.Fatal(err)
+    }
+    n := bytes.Index(b, []byte{0})
+    token = string(b[:n])
+}
+
 func main() {
     //f.Auth("null")
     //pushValue()
     //getValue()
 
     http.HandleFunc("/", handleJavaClient)
-    http.HandleFunc("/fcmregister", handleJavaClient)
+    http.HandleFunc("/fcmregister", handleAndroid)
     fmt.Println("listening...")
     err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
     if err != nil {
