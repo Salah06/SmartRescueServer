@@ -16,12 +16,11 @@ import (
     "gopkg.in/zabawaba99/firego.v1"
     "net/http"
     "io/ioutil"
-    "os"
+    //"os"
     "bytes"
 )
 
 var f = firego.New("https://testrescue-d8b04.firebaseio.com/", nil)
-var token string
 
 func pushValue() {
     v := "bar"
@@ -54,6 +53,7 @@ func CheckError(err error) {
 }
 
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
+    fmt.Printf("caca java")
     b,err := ioutil.ReadAll(r.Body)
     if err != nil {
         log.Fatal(err)
@@ -62,12 +62,23 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleAndroid(w http.ResponseWriter, r *http.Request) {
+    fmt.Printf("caca android")
+    token := make(chan string)
+
     b,err := ioutil.ReadAll(r.Body)
     if err != nil {
         log.Fatal(err)
     }
     n := bytes.Index(b, []byte{0})
-    token = string(b[:n])
+    token <- string(b[:n])
+    go tokenPrinter(token)
+}
+
+func tokenPrinter(token chan string) {
+    for {
+        t := <- token
+        fmt.Println("token = %s", t)
+    }
 }
 
 func main() {
@@ -78,7 +89,8 @@ func main() {
     http.HandleFunc("/", handleJavaClient)
     http.HandleFunc("/fcmregister", handleAndroid)
     fmt.Println("listening...")
-    err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+    //err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+    err := http.ListenAndServe(":1234", nil)
     if err != nil {
         panic(err)
     }
