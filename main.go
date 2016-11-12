@@ -65,6 +65,7 @@ func main() {
     //getValue()
 
     http.HandleFunc("/", handleJavaClient)
+    http.HandleFunc("/fcmregister", handleJavaClient)
     fmt.Println("listening...")
     err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
     if err != nil {
