@@ -16,6 +16,7 @@ import (
     "gopkg.in/zabawaba99/firego.v1"
     "net/http"
     "io/ioutil"
+    "os"
 )
 
 var f = firego.New("https://testrescue-d8b04.firebaseio.com/", nil)
@@ -64,5 +65,9 @@ func main() {
     //getValue()
 
     http.HandleFunc("/", handleJavaClient)
-    http.ListenAndServe(":1234", nil)
+    fmt.Println("listening...")
+    err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+    if err != nil {
+        panic(err)
+    }
 }
