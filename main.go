@@ -13,11 +13,13 @@ import (
     // "bufio"
     "log"
     "fmt"
-    "gopkg.in/zabawaba99/firego.v1"
     "net/http"
     "io/ioutil"
     //"os"
     "bytes"
+
+    "gopkg.in/zabawaba99/firego.v1"
+    "github.com/gorilla/mux"
 )
 
 var f = firego.New("https://testrescue-d8b04.firebaseio.com/", nil)
@@ -86,8 +88,10 @@ func main() {
     //pushValue()
     //getValue()
 
-    http.HandleFunc("/", handleJavaClient)
-    http.HandleFunc("/fcmregister", handleAndroid)
+    router := mux.NewRouter().StrictSlash(true)
+    router.HandleFunc("/", handleAndroid)
+    router.HandleFunc("/java", handleJavaClient)
+
     fmt.Println("listening...")
     //err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
     err := http.ListenAndServe(":1234", nil)
