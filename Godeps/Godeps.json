@@ -4,17 +4,13 @@
 	"GodepVersion": "v75",
 	"Deps": [
 		{
+			"ImportPath": "github.com/NaySoftware/go-fcm",
+			"Rev": "da97f9af89d7286ee2a1d62f16aaf7a6c8b31dba"
+		},
+		{
 			"ImportPath": "github.com/gorilla/mux",
 			"Comment": "v1.1-27-g757bef9",
 			"Rev": "757bef944d0f21880861c2dd9c871ca543023cba"
-		},
-		{
-			"ImportPath": "github.com/zabawaba99/firego/sync",
-			"Rev": "7c8d46a1fca7ae5cebcb2cf98fd10966dae20dab"
-		},
-		{
-			"ImportPath": "gopkg.in/zabawaba99/firego.v1",
-			"Rev": "7a3eef541ef837845fa0d6e965550fcad4b1e1b1"
 		}
 	]
 }
