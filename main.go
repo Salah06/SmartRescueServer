@@ -15,7 +15,7 @@ import (
     "fmt"
     "net/http"
     "io/ioutil"
-    //"os"
+    "os"
     "bytes"
 
     "gopkg.in/zabawaba99/firego.v1"
