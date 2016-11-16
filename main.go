@@ -55,16 +55,16 @@ func CheckError(err error) {
 }
 
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
-    fmt.Printf("caca java")
     b,err := ioutil.ReadAll(r.Body)
     if err != nil {
         log.Fatal(err)
     }
-    fmt.Printf("%s",b)
+    fmt.Println("%s", b)
+    fmt.Println(r.Methode)
+
 }
 
-func handleAndroid(w http.ResponseWriter, r *http.Request) {
-    fmt.Printf("caca android")
+func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     token := make(chan string)
 
     b,err := ioutil.ReadAll(r.Body)
@@ -89,12 +89,12 @@ func main() {
     //getValue()
 
     router := mux.NewRouter().StrictSlash(true)
-    router.HandleFunc("/", handleAndroid)
+    router.HandleFunc("/android", handleAndroidClient)
     router.HandleFunc("/java", handleJavaClient)
 
     fmt.Println("listening...")
-    err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
-    //err := http.ListenAndServe(":1234", nil)
+    //err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
+    err := http.ListenAndServe(":1234", router)
     if err != nil {
         panic(err)
     }
