@@ -13,17 +13,14 @@ import (
 
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
-    b,err := ioutil.ReadAll(r.Body)
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Printf("%s",b)
+    vehiculeId := r.FormValue("vehiculeId")
+    fmt.Printf("%s", vehiculeId)
 }
 
 func main() {
 
     router := mux.NewRouter().StrictSlash(true)
-    router.HandleFunc("/android", handleAndroidClient)
+    router.HandleFunc("/android", handleAndroidClient).Methods("POST")
 
     fmt.Println("listening...")
     err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
