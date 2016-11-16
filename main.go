@@ -12,7 +12,7 @@ import (
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     vehiculeId := r.FormValue("vehiculeId")
-    fmt.Printf("%s", vehiculeId)
+    fmt.Printf(vehiculeId)
 }
 
 func main() {
