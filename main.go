@@ -17,6 +17,7 @@ import (
     "io/ioutil"
     //"os"
     "bytes"
+    "net/url"
 
     "gopkg.in/zabawaba99/firego.v1"
     "github.com/gorilla/mux"
@@ -60,7 +61,7 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
     }
     fmt.Println("%s", b)
-    fmt.Println(r.Methode)
+    fmt.Println(r.url.Values)
 
 }
 
@@ -93,8 +94,8 @@ func main() {
     router.HandleFunc("/java", handleJavaClient)
 
     fmt.Println("listening...")
-    //err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
-    err := http.ListenAndServe(":1234", router)
+    err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
+    //err := http.ListenAndServe(":1234", router)
     if err != nil {
         panic(err)
     }
