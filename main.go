@@ -50,6 +50,7 @@ func broadcast(msg string) {
 
 func main() {
 
+    tokens = append(tokens, "e6THtaBcNVE:APA91bESyZPEZ19jjMIpSBkry1eKAJCnYeRPsw6Dm_mMUQovH3APX4V-gSxJHHnuFK1OWhcM3dOpNw2h__sRy3HYaY5fqQ--vKwzG43WngO-XGEqO1b_X8aFM7HAioLljQH4M505RR1U")
 
     router := mux.NewRouter().StrictSlash(true)
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
