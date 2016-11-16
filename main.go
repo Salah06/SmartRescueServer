@@ -20,6 +20,7 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     }
     n := bytes.Index(b, []byte{0})
     fmt.Println(n)
+    fmt.Println("caca")
 }
 
 func main() {
