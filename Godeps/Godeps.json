@@ -4,16 +4,17 @@
 	"GodepVersion": "v75",
 	"Deps": [
 		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.1-27-g757bef9",
+			"Rev": "757bef944d0f21880861c2dd9c871ca543023cba"
+		},
+		{
 			"ImportPath": "github.com/zabawaba99/firego/sync",
-			"Rev": "1040c896eddd41d36aa3ef165599247e22bd9ffb"
+			"Rev": "7c8d46a1fca7ae5cebcb2cf98fd10966dae20dab"
 		},
 		{
 			"ImportPath": "gopkg.in/zabawaba99/firego.v1",
 			"Rev": "7a3eef541ef837845fa0d6e965550fcad4b1e1b1"
-		},
-		{
-			"ImportPath": "github.com/gorilla/mux",
-			"Rev": "757bef944d0f21880861c2dd9c871ca543023cba"
 		}
 	]
 }
