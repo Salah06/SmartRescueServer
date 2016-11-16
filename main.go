@@ -93,8 +93,8 @@ func main() {
     router.HandleFunc("/java", handleJavaClient)
 
     fmt.Println("listening...")
-    //err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
-    err := http.ListenAndServe(":1234", nil)
+    err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+    //err := http.ListenAndServe(":1234", nil)
     if err != nil {
         panic(err)
     }
