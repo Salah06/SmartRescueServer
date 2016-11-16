@@ -6,7 +6,6 @@ import (
     "net/http"
     "io/ioutil"
     "os"
-    "bytes"
 
     "github.com/gorilla/mux"
 )
@@ -18,10 +17,7 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         log.Fatal(err)
     }
-    n := bytes.Index(b, []byte{0})
-    fmt.Println(n)
-    fmt.Println("%s", b)
-    fmt.Println("caca")
+    fmt.Printf("%s",b)
 }
 
 func main() {
