@@ -12,7 +12,10 @@ import (
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     vehiculeId := r.FormValue("vehiculeId")
+    token := r.FormValue("token")
     fmt.Printf(vehiculeId)
+    fmt.Printf("coucou")
+    fmt.Printf(token)
 }
 
 func main() {
