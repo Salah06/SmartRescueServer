@@ -32,9 +32,8 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     fmt.Printf("%s, %s, %s", service, lvl, address)
 
     msgEmergency := map[string]string{
-        "msg": "Urgence",
+        "msg": address,
         "emergencyLevel": lvl,
-        "address": address,
     }
     go broadcast(msgEmergency)
 }
