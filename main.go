@@ -7,7 +7,10 @@ import (
     "time"
     "log"
 
+<<<<<<< HEAD
     "gopkg.in/zabawaba99/firego.v1"
+=======
+>>>>>>> 6b95c3267d638b8457374239d742696ce3d9ff1d
     "github.com/NaySoftware/go-fcm"
     "github.com/gorilla/mux"
 )
@@ -19,7 +22,6 @@ var tokenC = make(chan map[string]string)
 var tokens []string
 var idEmergency = 0
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
-
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     vehiculeId := r.FormValue("vehiculeId")
@@ -71,7 +73,7 @@ func main() {
     //fmt.Println(tokens)
 
     go catchGPS()
-
+    
     router := mux.NewRouter().StrictSlash(true)
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
     router.HandleFunc("/java", handleJavaClient).Methods("POST")
