@@ -20,6 +20,7 @@ var tokens []string
 var idEmergency = 0
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
 
+
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     vehiculeId := r.FormValue("vehiculeId")
     token := r.FormValue("token")
