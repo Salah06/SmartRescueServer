@@ -28,8 +28,7 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     lvl := r.FormValue("emergencyLevel")
     address := r.FormValue("address")
-    service := r.FormValue("service")
-    fmt.Printf("%s, %s, %s", service, lvl, address)
+    //service := r.FormValue("service")
 
     msgEmergency := map[string]string{
         "msg": address,
