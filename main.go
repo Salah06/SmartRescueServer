@@ -7,10 +7,7 @@ import (
     "time"
     "log"
 
-<<<<<<< HEAD
     "gopkg.in/zabawaba99/firego.v1"
-=======
->>>>>>> 6b95c3267d638b8457374239d742696ce3d9ff1d
     "github.com/NaySoftware/go-fcm"
     "github.com/gorilla/mux"
 )
@@ -73,7 +70,7 @@ func main() {
     //fmt.Println(tokens)
 
     go catchGPS()
-    
+
     router := mux.NewRouter().StrictSlash(true)
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
     router.HandleFunc("/java", handleJavaClient).Methods("POST")
