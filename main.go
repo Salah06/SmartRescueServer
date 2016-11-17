@@ -4,7 +4,6 @@ import (
     "fmt"
     "net/http"
     "os"
-    "strconv"
 
     "github.com/NaySoftware/go-fcm"
     "github.com/gorilla/mux"
@@ -32,11 +31,14 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     service := r.FormValue("service")
     fmt.Printf("%s, %s, %s", service, lvl, address)
 
-    msgEmergency := strconv.Itoa(idEmergency) + ";" + lvl + ";" + address
+    msgEmergency := map[string]string{
+        "emergencyLevel": lvl,
+        "address": address,
+    }
     go broadcast(msgEmergency)
 }
 
-func broadcast(msg string) {
+func broadcast(msg map[string]string) {
     c := fcm.NewFcmClient(serverKey)
     c.NewFcmRegIdsMsg(tokens, msg)
     status, err := c.Send()
@@ -51,6 +53,7 @@ func broadcast(msg string) {
 func main() {
 
     tokens = append(tokens, "e6THtaBcNVE:APA91bESyZPEZ19jjMIpSBkry1eKAJCnYeRPsw6Dm_mMUQovH3APX4V-gSxJHHnuFK1OWhcM3dOpNw2h__sRy3HYaY5fqQ--vKwzG43WngO-XGEqO1b_X8aFM7HAioLljQH4M505RR1U")
+    //fmt.Println(tokens)
 
     router := mux.NewRouter().StrictSlash(true)
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
