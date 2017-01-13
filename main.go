@@ -5,6 +5,7 @@ import (
     "net/http"
     "os"
     "log"
+    "strconv"
 
     "github.com/NaySoftware/go-fcm"
     "github.com/gorilla/mux"
@@ -18,21 +19,22 @@ var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
 var memo map[string][]string
 var tokens []string
 var repartiteur map[string]chan([]string)
+var idEmergency int
 
 
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
-    id := r.FormValue("id")
     lvl := r.FormValue("emergencyLevel")
     address := r.FormValue("address")
     //service := r.FormValue("service")
 
     msgEmergency := map[string]string{
-        "id" : id,          // !!! not yet implement
+        "id" : strconv.Itoa(idEmergency),
         "msg": address,
         "emergencyLevel": lvl,
     }
+    idEmergency += 1
 
-    go broadcastInit(msgEmergency ,address, id)
+    go broadcastInit(msgEmergency ,address, strconv.Itoa(idEmergency))
 }
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +46,7 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     fmt.Printf(idEmergency)
     fmt.Printf(token)
 
-    rep := []{token, response}
+    rep := []string{token, response}
     repartiteur[idEmergency] <- rep
 }
 
@@ -52,25 +54,28 @@ func broadcastInit(msg map[string]string, address string, id string) { // id est
     // init une liste de token potentiel pour l'intervention
     tokensPerimeter := spot(address, 2)
     memo[id] = tokensPerimeter
-    repartiteur[id] = make(chan string)
-    go listenResponse(id)
+    repartiteur[id] = make(chan []string)
+    go listenResponse(id, 10)
     go sendAndroids(tokens, msg)
 
 }
 
 func listenResponse(id string, numberNecessary int) {
     c := repartiteur[id]
-    inCharge := []string
+    inCharge := []string{}
     for {
         rep := <- c
         switch rep[1] {
         case "ok" :
             inCharge = append(inCharge, rep[0])
-            t := []{rep[0]}
-            r := "go go go"
+            t := []string{rep[0]}
+            r := map[string]string{ 
+                "msg" : "go go go",
+            }
             sendAndroids(t, r)
-        case "not" :
+        case "ko" :
             continue
+        }
     }
     if len(inCharge) == numberNecessary {
         memo[id] = inCharge
@@ -78,7 +83,7 @@ func listenResponse(id string, numberNecessary int) {
     }
 }
 
-func sendAndroids(tokens []string, msg string) {
+func sendAndroids(tokens []string, msg map[string]string) {
     c := fcm.NewFcmClient(serverKey)
     c.NewFcmRegIdsMsg(tokens, msg)
     status, err := c.Send()
