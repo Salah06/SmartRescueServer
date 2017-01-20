@@ -71,18 +71,18 @@ func listenResponse(id string, numberNecessary int) {
     for {
         rep := <- c
         switch rep[1] {
-        case "ok" :
+        case "OK" :
             inCharge = append(inCharge, rep[0])
             t := []string{rep[0]}
             r := map[string]string{ 
                 "msg" : "go go go",
             }
             rf := map[string]interface{}{ 
-                "request" : "pipi",
+                "command" : "confirmEmergency",
                 "data" : r,
             }
             sendAndroids(t, rf)
-        case "ko" :
+        case "KO" :
             continue
         }
     }
