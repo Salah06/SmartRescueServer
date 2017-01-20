@@ -95,10 +95,7 @@ func listenResponse(id string, numberNecessary int) {
 
 func sendAndroids(tokens []string, msg map[string]interface{}) {
     c := fcm.NewFcmClient(serverKey)
-    r := map[string]string{ 
-        "msg" : "go go go",
-    }
-    c.NewFcmRegIdsMsg(tokens, r)
+    c.NewFcmRegIdsMsg(tokens, msg)
     status, err := c.Send()
 
     if err == nil {
