@@ -59,11 +59,11 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
 func broadcastInit(msg map[string]interface{}, address string, id string) { // id est aussi dans map...
     // init une liste de token potentiel pour l'intervention
     tokensPerimeter := spot(address, 2)
-    fmt.Println("%s\n", tokensPerimeter[0])
+    fmt.Println(tokensPerimeter[0])
     memo[id] = tokensPerimeter
     repartiteur[id] = make(chan []string)
     go listenResponse(id, 10)
-    go sendAndroids(tokens, msg)
+    go sendAndroids(tokensPerimeter, msg)
 
 }
 
@@ -76,7 +76,7 @@ func listenResponse(id string, numberNecessary int) {
         case "ok" :
             inCharge = append(inCharge, rep[0])
             t := []string{rep[0]}
-            r := map[string]interface{}{ 
+            r := map[string]string{ 
                 "msg" : "go go go",
             }
             rf := map[string]interface{}{ 
@@ -96,7 +96,10 @@ func listenResponse(id string, numberNecessary int) {
 
 func sendAndroids(tokens []string, msg map[string]interface{}) {
     c := fcm.NewFcmClient(serverKey)
-    c.NewFcmRegIdsMsg(tokens, msg)
+    r := map[string]string{ 
+        "msg" : "go go go",
+    }
+    c.NewFcmRegIdsMsg(tokens, r)
     status, err := c.Send()
 
     if err == nil {
@@ -139,6 +142,7 @@ func main() {
 
     fmt.Println("listening...")
     err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
+    //err := http.ListenAndServe(":1234", router)
      if err != nil {
         panic(err)
     }
