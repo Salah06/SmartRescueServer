@@ -17,7 +17,6 @@ const (
 )
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
 var memo  = make(map[string][]string)
-var tokens []string
 var repartiteur = make(map[string]chan([]string))
 var idEmergency int
 
