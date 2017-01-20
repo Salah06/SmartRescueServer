@@ -3,7 +3,7 @@ package main
 import (
     "fmt"
     "net/http"
-    //"os"
+    "os"
     "log"
     "strconv"
 
@@ -135,8 +135,8 @@ func main() {
     catchGPS(1) // a virer
 
     fmt.Println("listening...")
-    err := http.ListenAndServe(":1234", router)
-    if err != nil {
+    err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
+     if err != nil {
         panic(err)
     }
 }
