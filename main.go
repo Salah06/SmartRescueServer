@@ -34,7 +34,12 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     }
     idEmergency += 1
 
-    go broadcastInit(msgEmergency ,address, strconv.Itoa(idEmergency))
+    msgFinal := map[string]interface{}{
+        "request" : "caca",
+        "data": msgEmergency,
+    }
+
+    go broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency))
 }
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +55,7 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     repartiteur[idEmergency] <- rep
 }
 
-func broadcastInit(msg map[string]string, address string, id string) { // id est aussi dans map...
+func broadcastInit(msg map[string]interface{}, address string, id string) { // id est aussi dans map...
     // init une liste de token potentiel pour l'intervention
     tokensPerimeter := spot(address, 2)
     memo[id] = tokensPerimeter
@@ -69,10 +74,14 @@ func listenResponse(id string, numberNecessary int) {
         case "ok" :
             inCharge = append(inCharge, rep[0])
             t := []string{rep[0]}
-            r := map[string]string{ 
+            r := map[string]interface{}{ 
                 "msg" : "go go go",
             }
-            sendAndroids(t, r)
+            rf := map[string]interface{}{ 
+                "request" : "pipi",
+                "data" : r,
+            }
+            sendAndroids(t, rf)
         case "ko" :
             continue
         }
@@ -83,7 +92,7 @@ func listenResponse(id string, numberNecessary int) {
     }
 }
 
-func sendAndroids(tokens []string, msg map[string]string) {
+func sendAndroids(tokens []string, msg map[string]interface{}) {
     c := fcm.NewFcmClient(serverKey)
     c.NewFcmRegIdsMsg(tokens, msg)
     status, err := c.Send()
@@ -107,7 +116,10 @@ func catchGPS() {
         log.Fatal(err)
     }
     // a print avec [token, ...] histoire de dire qu'on recup toute la liste
-    fmt.Printf("%s\n", v) // oh le format degueu
+    t := v["ambulance-1"]
+    t = t.(map[string]interface{})
+    fmt.Printf("%s\n", t)
+    //fmt.Printf("%s\n", t["token"])
 }
 
 func main() {
@@ -116,7 +128,7 @@ func main() {
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
     router.HandleFunc("/java", handleJavaClient).Methods("POST")
 
-    catchGPS()
+    catchGPS() // a virer
 
     fmt.Println("listening...")
     err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
