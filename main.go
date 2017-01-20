@@ -27,14 +27,13 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     //service := r.FormValue("service")
 
     msgEmergency := map[string]string{
-        "id" : strconv.Itoa(idEmergency),
-        "msg": address,
-        "emergencyLevel": lvl,
+        "idEmergency" : strconv.Itoa(idEmergency),
+        "address": address,
     }
     idEmergency += 1
 
     msgFinal := map[string]interface{}{
-        "request" : "caca",
+        "command" : "request",
         "data": msgEmergency,
     }
 
