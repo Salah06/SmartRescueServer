@@ -39,6 +39,7 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
         "data": msgEmergency,
     }
 
+    fmt.Println("Receive emergency...")
     go broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency))
 }
 
@@ -115,15 +116,17 @@ func catchGPS(n int) []string {
     if err := firebase.Value(&v); err != nil {
         log.Fatal(err)
     }
-    // a print avec [token, ...] histoire de dire qu'on recup toute la liste
-    t := v["ambulance-1"]
-    ti, ok := t.(map[string]interface{})
-    fmt.Println(ti["token"])
-    fmt.Println(ok)
 
     var tokens = make([]string, n)
-    tokens[0] = ti["token"].(string)
-    return tokens 
+    acc := 0
+    for k := range v {
+        tokens[acc] = v[k].(map[string]interface{})["token"].(string)
+        acc = acc + 1
+        if acc == n {
+            break
+        }
+    }
+    return tokens
 }
 
 func main() {
@@ -132,7 +135,7 @@ func main() {
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
     router.HandleFunc("/java", handleJavaClient).Methods("POST")
 
-    catchGPS(1) // a virer
+    //catchGPS(1) // a virer
 
     fmt.Println("listening...")
     err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
