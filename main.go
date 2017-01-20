@@ -74,7 +74,7 @@ func listenResponse(id string, numberNecessary int) {
         case "OK" :
             inCharge = append(inCharge, rep[0])
             t := []string{rep[0]}
-            r := map[string]string{ 
+            r := map[string]string{
                 "msg" : "go go go",
             }
             rf := map[string]interface{}{ 
@@ -82,6 +82,7 @@ func listenResponse(id string, numberNecessary int) {
                 "data" : r,
             }
             sendAndroids(t, rf)
+            fmt.Println("vehicul accept")
         case "KO" :
             continue
         }
