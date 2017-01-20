@@ -22,7 +22,7 @@ var idEmergency int
 
 
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
-    lvl := r.FormValue("emergencyLevel")
+    //lvl := r.FormValue("emergencyLevel")
     address := r.FormValue("address")
     //service := r.FormValue("service")
 
