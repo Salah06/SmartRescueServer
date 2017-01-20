@@ -3,7 +3,7 @@ package main
 import (
     "fmt"
     "net/http"
-    "os"
+    //"os"
     "log"
     "strconv"
 
@@ -16,9 +16,9 @@ const (
      serverKey = "AIzaSyAM5yN0SNAswN6l6t6DEKv9fLRSeUaliVY"
 )
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
-var memo map[string][]string
+var memo  = make(map[string][]string)
 var tokens []string
-var repartiteur map[string]chan([]string)
+var repartiteur = make(map[string]chan([]string))
 var idEmergency int
 
 
@@ -58,6 +58,7 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
 func broadcastInit(msg map[string]interface{}, address string, id string) { // id est aussi dans map...
     // init une liste de token potentiel pour l'intervention
     tokensPerimeter := spot(address, 2)
+    fmt.Println("%s\n", tokensPerimeter[0])
     memo[id] = tokensPerimeter
     repartiteur[id] = make(chan []string)
     go listenResponse(id, 10)
@@ -105,21 +106,24 @@ func sendAndroids(tokens []string, msg map[string]interface{}) {
 }
 
 func spot(address string, perimeter int) []string {
-    catchGPS()
     // find vehicul in perimeter of address
-    return tokens
+    return catchGPS(1)
 }
 
-func catchGPS() {
+func catchGPS(n int) []string {
     var v map[string]interface{}
     if err := firebase.Value(&v); err != nil {
         log.Fatal(err)
     }
     // a print avec [token, ...] histoire de dire qu'on recup toute la liste
     t := v["ambulance-1"]
-    t = t.(map[string]interface{})
-    fmt.Printf("%s\n", t)
-    //fmt.Printf("%s\n", t["token"])
+    ti, ok := t.(map[string]interface{})
+    fmt.Println(ti["token"])
+    fmt.Println(ok)
+
+    var tokens = make([]string, n)
+    tokens[0] = ti["token"].(string)
+    return tokens 
 }
 
 func main() {
@@ -128,10 +132,10 @@ func main() {
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
     router.HandleFunc("/java", handleJavaClient).Methods("POST")
 
-    catchGPS() // a virer
+    catchGPS(1) // a virer
 
     fmt.Println("listening...")
-    err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
+    err := http.ListenAndServe(":1234", router)
     if err != nil {
         panic(err)
     }
