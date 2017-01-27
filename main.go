@@ -19,6 +19,7 @@ var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
 var memo  = make(map[string][]string)
 var repartiteur = make(map[string]chan([]string))
 var idEmergency int
+var tokenAction []string
 
 
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
@@ -119,13 +120,26 @@ func catchGPS(n int) []string {
     var tokens = make([]string, n)
     acc := 0
     for k := range v {
-        tokens[acc] = v[k].(map[string]interface{})["token"].(string)
+        token_tmp := v[k].(map[string]interface{})["token"].(string)
+        if stringInSlice(token_tmp, tokenAction) {
+            continue
+        }
+        tokens[acc] = token_tmp
         acc = acc + 1
         if acc == n {
             break
         }
     }
     return tokens
+}
+
+func stringInSlice(a string, list []string) bool {
+    for _, b := range list {
+        if b == a {
+            return true
+        }
+    }
+    return false
 }
 
 func main() {
