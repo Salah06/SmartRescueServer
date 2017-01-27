@@ -107,7 +107,7 @@ func sendAndroids(tokens []string, msg map[string]interface{}) {
 
 func spot(address string, perimeter int) []string {
     // find vehicul in perimeter of address
-    return catchGPS(1)
+    return catchGPS(10)
 }
 
 func catchGPS(n int) []string {
