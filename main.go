@@ -16,14 +16,14 @@ const (
      serverKey = "AIzaSyAM5yN0SNAswN6l6t6DEKv9fLRSeUaliVY"
 )
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
-var memo  = make(map[string][]string)
+var memo  = make(map[string][]string)           // SAVE
 var repartiteur = make(map[string]chan([]string))
 var idEmergency int
-var tokenAction []string
+var tokenAction []string                        // SAVE
 
 
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
-    //lvl := r.FormValue("emergencyLevel")
+    lvl := r.FormValue("emergencyLevel")
     address := r.FormValue("address")
     //service := r.FormValue("service")
 
@@ -33,13 +33,13 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     }
     idEmergency += 1
 
-    msgFinal := map[string]interface{}{
+    msgFinal := map[string]interface{} {
         "command" : "request",
         "data": msgEmergency,
     }
 
     fmt.Println("Receive emergency...")
-    go broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency))
+    go broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency), lvl)
 }
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
@@ -55,13 +55,24 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     repartiteur[idEmergency] <- rep
 }
 
-func broadcastInit(msg map[string]interface{}, address string, id string) { // id est aussi dans map...
+func broadcastInit(msg map[string]interface{}, address string, id string, lvlEmergency string) { // id est aussi dans map...
     // init une liste de token potentiel pour l'intervention
     tokensPerimeter := spot(address, 2)
     fmt.Println(tokensPerimeter[0])
     memo[id] = tokensPerimeter
     repartiteur[id] = make(chan []string)
-    go listenResponse(id, 10)
+
+    numberNecessary := 0
+    switch lvlEmergency {
+    case "LOW" :
+        numberNecessary = 1
+    case "MEDIUM" :
+        numberNecessary = 2
+    case "HIGH" :
+        numberNecessary = 3
+    }
+
+    go listenResponse(id, numberNecessary)
     go sendAndroids(tokensPerimeter, msg)
 
 }
