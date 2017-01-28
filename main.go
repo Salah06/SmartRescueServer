@@ -6,6 +6,7 @@ import (
     "os"
     "log"
     "strconv"
+    "time"
 
     "github.com/NaySoftware/go-fcm"
     "github.com/gorilla/mux"
@@ -16,16 +17,50 @@ const (
      serverKey = "AIzaSyAM5yN0SNAswN6l6t6DEKv9fLRSeUaliVY"
 )
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
-var memo  = make(map[string][]string)           // SAVE
-var repartiteur = make(map[string]chan([]string))
+var memo  = make(map[string][]string)           // SAVE + broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency), lvl)
+var repartiteur = make(map[string]chan([]string))   // ^^^^^^^ on parcours les clefs de memo et on make chan
 var idEmergency int
-var tokenAction []string                        // SAVE
+var tokenAction []string                        // ^^^^^^^ on parcours tout les tokens de memo
+
+
+func saveData() {
+    for {
+        f, err := os.Create("/tmp/save")
+        check(err)
+        defer f.Close()
+        save := ""
+
+        // |id,token,token|id,token
+        for id, tokens := range memo {
+            save = save + "|" + id
+            fmt.Println(tokens[0]) // address si pas encore trouve tout le monde
+            for _, token := range tokens {
+                save = save + "," + token
+            }
+        }
+
+        n3, errr := f.WriteString(save)
+        check(errr)
+        fmt.Printf("wrote %d bytes\n", n3)
+
+        f.Sync()
+        time.Sleep(10000 * time.Millisecond)
+    }
+}
+
+func check(e error) {
+    if e != nil {
+        panic(e)
+    }
+}
 
 
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     lvl := r.FormValue("emergencyLevel")
     address := r.FormValue("address")
     //service := r.FormValue("service")
+
+    memo[strconv.Itoa(idEmergency)] = []string{address, lvl}
 
     msgEmergency := map[string]string{
         "idEmergency" : strconv.Itoa(idEmergency),
@@ -58,8 +93,8 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
 func broadcastInit(msg map[string]interface{}, address string, id string, lvlEmergency string) { // id est aussi dans map...
     // init une liste de token potentiel pour l'intervention
     tokensPerimeter := spot(address, 2)
-    fmt.Println(tokensPerimeter[0])
-    memo[id] = tokensPerimeter
+    //fmt.Println(tokensPerimeter[0])
+    //memo[id] = tokensPerimeter    // j'ajoute! je n'enleve pas !
     repartiteur[id] = make(chan []string)
 
     numberNecessary := 0
@@ -85,6 +120,7 @@ func listenResponse(id string, numberNecessary int) {
         switch rep[1] {
         case "OK" :
             inCharge = append(inCharge, rep[0])
+            tokenAction = append(tokenAction, rep[0])
             t := []string{rep[0]}
             r := map[string]string{
                 "msg" : "go go go",
@@ -162,8 +198,9 @@ func main() {
     //catchGPS(1) // a virer
 
     fmt.Println("listening...")
-    err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
-    //err := http.ListenAndServe(":1234", router)
+    go saveData()
+    //err := http.ListenAndServe(":"+os.Getenv("PORT"), router)
+    err := http.ListenAndServe(":1234", router)
      if err != nil {
         panic(err)
     }
