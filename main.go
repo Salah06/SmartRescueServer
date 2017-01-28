@@ -19,11 +19,14 @@ const (
      serverKey = "AIzaSyAM5yN0SNAswN6l6t6DEKv9fLRSeUaliVY"
 )
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
-var memo  = make(map[string][]string)           // SAVE + broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency), lvl)
-var repartiteur = make(map[string]chan([]string))   // ^^^^^^^ on parcours les clefs de memo et on make chan
+var memo  = make(map[string][]string)
+var repartiteur = make(map[string]chan([]string)) 
 var idEmergency int
-var tokenAction []string                        // ^^^^^^^ on parcours tout les tokens de memo
+var tokenAction []string
+var reSendEmergency [][]string
 
+
+//--------------------RECOVER-------------------------------------------------------------
 
 func saveData() {
     for {
@@ -65,21 +68,60 @@ func recover() {
         split_quote := strings.Split(split_pipe[i], ",")
         id := split_quote[0]
         var tab_tmp []string
-        for j := 1; j < len(split_quote); j++ {
-           tab_tmp = append(tab_tmp, split_quote[j])
+        if (split_quote[2] == "LOW") || (split_quote[2] == "MEDIUM") || (split_quote[2] == "HIGH") {
+            emergency_tmp := []string{split_quote[0], split_quote[1], split_quote[2]} // id,address,lvl
+            reSendEmergency = append(reSendEmergency, emergency_tmp)
+        } else {
+            for j := 1; j < len(split_quote); j++ {
+                tab_tmp = append(tab_tmp, split_quote[j])
+            }
+            memo[id] = tab_tmp
         }
-        memo[id] = tab_tmp   
     }
 }
 
-func convert( b []byte ) string {
-    s := make([]string,len(b))
-    for i := range b {
-        s[i] = strconv.Itoa(int(b[i]))
+func reSend() {
+    for i := 0; i < len(reSendEmergency); i ++ {
+        handleJavaRecover(reSendEmergency[i][0], reSendEmergency[i][1], reSendEmergency[i][2])
     }
-    return strings.Join(s,",")
 }
 
+func handleJavaRecover(id string, address string, lvl string) {
+
+    memo[id] = []string{address, lvl}
+
+    msgEmergency := map[string]string{
+        "idEmergency" : id,
+        "address": address,
+    }
+
+    msgFinal := map[string]interface{} {
+        "command" : "request",
+        "data": msgEmergency,
+    }
+
+    fmt.Println("resend old emergency...")
+    go broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency), lvl)
+}
+
+func updateData() {
+    max := 0
+    for id, tokens := range memo {
+
+        id_int, err := strconv.Atoi(id)
+        check(err)
+        if id_int > max {
+            max = id_int
+        }
+        repartiteur[id] = make(chan []string)
+        for _, token := range tokens {
+            tokenAction = append(tokenAction, token)
+        }
+    }
+    idEmergency = max + 1
+}
+
+//---------------------------------------------------------------------------------
 
 func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     lvl := r.FormValue("emergencyLevel")
@@ -221,6 +263,8 @@ func main() {
         if os.Args[1] == "recover" {
             fmt.Println("recover!")
             recover()
+            updateData()
+            reSend()
         }
     }
 
