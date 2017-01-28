@@ -7,6 +7,8 @@ import (
     "log"
     "strconv"
     "time"
+    "io/ioutil"
+    "strings"
 
     "github.com/NaySoftware/go-fcm"
     "github.com/gorilla/mux"
@@ -33,7 +35,7 @@ func saveData() {
         // |id,token,token|id,token
         for id, tokens := range memo {
             save = save + "|" + id
-            fmt.Println(tokens[0]) // address si pas encore trouve tout le monde
+            // tokens[0] = address si pas encore trouve tout le monde
             for _, token := range tokens {
                 save = save + "," + token
             }
@@ -52,6 +54,30 @@ func check(e error) {
     if e != nil {
         panic(e)
     }
+}
+
+func recover() {
+    save, err := ioutil.ReadFile("/tmp/save")
+    check(err)
+
+    split_pipe := strings.Split(string(save), "|")
+    for i := 1; i < len(split_pipe); i++ {
+        split_quote := strings.Split(split_pipe[i], ",")
+        id := split_quote[0]
+        var tab_tmp []string
+        for j := 1; j < len(split_quote); j++ {
+           tab_tmp = append(tab_tmp, split_quote[j])
+        }
+        memo[id] = tab_tmp   
+    }
+}
+
+func convert( b []byte ) string {
+    s := make([]string,len(b))
+    for i := range b {
+        s[i] = strconv.Itoa(int(b[i]))
+    }
+    return strings.Join(s,",")
 }
 
 
@@ -190,6 +216,13 @@ func stringInSlice(a string, list []string) bool {
 }
 
 func main() {
+
+    if len(os.Args) == 2 {
+        if os.Args[1] == "recover" {
+            fmt.Println("recover!")
+            recover()
+        }
+    }
 
     router := mux.NewRouter().StrictSlash(true)
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
