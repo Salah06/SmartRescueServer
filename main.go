@@ -21,7 +21,7 @@ const (
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
 var memo  = make(map[string][]string)
 var repartiteur = make(map[string]chan([]string)) 
-var idEmergency int
+var accIdEmergency = 0
 var tokenAction []string
 var reSendEmergency [][]string
 
@@ -101,11 +101,11 @@ func handleJavaRecover(id string, address string, lvl string) {
     }
 
     fmt.Println("resend old emergency...")
-    go broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency), lvl)
+    go broadcastInit(msgFinal ,address, id, lvl)
 }
 
 func updateData() {
-    max := 0
+    max := accIdEmergency
     for id, tokens := range memo {
 
         id_int, err := strconv.Atoi(id)
@@ -118,7 +118,7 @@ func updateData() {
             tokenAction = append(tokenAction, token)
         }
     }
-    idEmergency = max + 1
+    accIdEmergency = max + 1
 }
 
 //---------------------------------------------------------------------------------
@@ -128,11 +128,10 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     address := r.FormValue("address")
     //service := r.FormValue("service")
 
-    idEmergency += 1
-    memo[strconv.Itoa(idEmergency)] = []string{address, lvl}
+    memo[strconv.Itoa(accIdEmergency)] = []string{address, lvl}
 
     msgEmergency := map[string]string{
-        "idEmergency" : strconv.Itoa(idEmergency),
+        "idEmergency" : strconv.Itoa(accIdEmergency),
         "address": address,
     }
 
@@ -141,8 +140,10 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
         "data": msgEmergency,
     }
 
+    accIdEmergency += 1
+
     fmt.Println("Receive emergency...")
-    go broadcastInit(msgFinal ,address, strconv.Itoa(idEmergency), lvl)
+    go broadcastInit(msgFinal ,address, strconv.Itoa(accIdEmergency), lvl)
 }
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
