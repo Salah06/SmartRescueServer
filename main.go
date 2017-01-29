@@ -128,13 +128,13 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     address := r.FormValue("address")
     //service := r.FormValue("service")
 
+    idEmergency += 1
     memo[strconv.Itoa(idEmergency)] = []string{address, lvl}
 
     msgEmergency := map[string]string{
         "idEmergency" : strconv.Itoa(idEmergency),
         "address": address,
     }
-    idEmergency += 1
 
     msgFinal := map[string]interface{} {
         "command" : "request",
