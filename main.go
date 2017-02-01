@@ -225,13 +225,13 @@ func listenResponse(id string, numberNecessary int) {
 func sendAndroids(tokens []string, msg map[string]interface{}) {
     c := fcm.NewFcmClient(serverKey)
     c.NewFcmRegIdsMsg(tokens, msg)
-    status, err := c.Send()
+    c.Send()
 
-    if err == nil {
-    status.PrintResults()
-    } else {
-        fmt.Println(err)
-    }
+    //if err == nil {
+    //status.PrintResults()
+    //} else {
+    //    fmt.Println(err)
+    //}
 }
 
 func spot(address string, perimeter int) []string {
