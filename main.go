@@ -21,10 +21,23 @@ const (
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
 var memo  = make(map[string][]string)
 var repartiteur = make(map[string]chan([]string)) 
-var accIdEmergency = 0
+var maxId = 0
 var tokenAction []string
 var reSendEmergency [][]string
+var chanId = make(chan(int))
 
+func charge() {
+    acc := maxId
+    for {
+        chanId <- acc
+        acc = acc + 1
+    }
+}
+
+func getId() int {
+    id := <- chanId
+    return id
+}
 
 //--------------------RECOVER-------------------------------------------------------------
 
@@ -105,7 +118,7 @@ func handleJavaRecover(id string, address string, lvl string) {
 }
 
 func updateData() {
-    max := accIdEmergency
+    max := maxId
     for id, tokens := range memo {
 
         id_int, err := strconv.Atoi(id)
@@ -118,7 +131,7 @@ func updateData() {
             tokenAction = append(tokenAction, token)
         }
     }
-    accIdEmergency = max + 1
+    maxId = max + 1
 }
 
 //---------------------------------------------------------------------------------
@@ -128,10 +141,11 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
     address := r.FormValue("address")
     //service := r.FormValue("service")
 
-    memo[strconv.Itoa(accIdEmergency)] = []string{address, lvl}
+    id := getId()
+    memo[strconv.Itoa(id)] = []string{address, lvl}
 
     msgEmergency := map[string]string{
-        "idEmergency" : strconv.Itoa(accIdEmergency),
+        "idEmergency" : strconv.Itoa(id),
         "address": address,
     }
 
@@ -140,10 +154,8 @@ func handleJavaClient(w http.ResponseWriter, r *http.Request) {
         "data": msgEmergency,
     }
 
-    accIdEmergency += 1
-
     fmt.Println("Receive emergency...")
-    go broadcastInit(msgFinal ,address, strconv.Itoa(accIdEmergency), lvl)
+    go broadcastInit(msgFinal ,address, strconv.Itoa(id), lvl)
 }
 
 func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
@@ -268,6 +280,8 @@ func main() {
             reSend()
         }
     }
+
+    go charge()
 
     router := mux.NewRouter().StrictSlash(true)
     router.HandleFunc("/android", handleAndroidClient).Methods("POST")
