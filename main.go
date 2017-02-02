@@ -81,9 +81,16 @@ func recover() {
         split_quote := strings.Split(split_pipe[i], ",")
         id := split_quote[0]
         var tab_tmp []string
-        if (split_quote[2] == "LOW") || (split_quote[2] == "MEDIUM") || (split_quote[2] == "HIGH") {
-            emergency_tmp := []string{split_quote[0], split_quote[1], split_quote[2]} // id,address,lvl
-            reSendEmergency = append(reSendEmergency, emergency_tmp)
+        if len(split_quote) < 2 {
+            if (split_quote[2] == "LOW") || (split_quote[2] == "MEDIUM") || (split_quote[2] == "HIGH") {
+                emergency_tmp := []string{split_quote[0], split_quote[1], split_quote[2]} // id,address,lvl
+                reSendEmergency = append(reSendEmergency, emergency_tmp)
+            } else {
+                for j := 1; j < len(split_quote); j++ {
+                    tab_tmp = append(tab_tmp, split_quote[j])
+                }
+                memo[id] = tab_tmp
+            }
         } else {
             for j := 1; j < len(split_quote); j++ {
                 tab_tmp = append(tab_tmp, split_quote[j])
@@ -163,9 +170,9 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     idEmergency := r.FormValue("idEmergency")
     token := r.FormValue("token")
     response := r.FormValue("response")
-    fmt.Printf(response)
-    fmt.Printf(idEmergency)
-    fmt.Printf(token)
+    //fmt.Printf(response)
+    //fmt.Printf(idEmergency)
+    //fmt.Printf(token)
 
     rep := []string{token, response}
     repartiteur[idEmergency] <- rep
@@ -215,10 +222,10 @@ func listenResponse(id string, numberNecessary int) {
         case "KO" :
             continue
         }
-    }
-    if len(inCharge) == numberNecessary {
-        memo[id] = inCharge
+        if len(inCharge) == numberNecessary {
+            memo[id] = inCharge
         return
+        }
     }
 }
 
