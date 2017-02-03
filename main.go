@@ -16,7 +16,7 @@ import (
 )
 
 const (
-     serverKey = "AIzaSyAM5yN0SNAswN6l6t6DEKv9fLRSeUaliVY"
+    serverKey = "AIzaSyAM5yN0SNAswN6l6t6DEKv9fLRSeUaliVY"
 )
 var firebase = firego.New("https://smartrescue-6e8ce.firebaseio.com/", nil)
 var memo  = make(map[string][]string)
@@ -81,7 +81,8 @@ func recover() {
         split_quote := strings.Split(split_pipe[i], ",")
         id := split_quote[0]
         var tab_tmp []string
-        if len(split_quote) < 2 {
+        if len(split_quote) > 2 {
+            fmt.Println(split_quote[2])
             if (split_quote[2] == "LOW") || (split_quote[2] == "MEDIUM") || (split_quote[2] == "HIGH") {
                 emergency_tmp := []string{split_quote[0], split_quote[1], split_quote[2]} // id,address,lvl
                 reSendEmergency = append(reSendEmergency, emergency_tmp)
@@ -92,6 +93,7 @@ func recover() {
                 memo[id] = tab_tmp
             }
         } else {
+            fmt.Println("recover : emergency op...")
             for j := 1; j < len(split_quote); j++ {
                 tab_tmp = append(tab_tmp, split_quote[j])
             }
@@ -170,9 +172,12 @@ func handleAndroidClient(w http.ResponseWriter, r *http.Request) {
     idEmergency := r.FormValue("idEmergency")
     token := r.FormValue("token")
     response := r.FormValue("response")
-    //fmt.Printf(response)
-    //fmt.Printf(idEmergency)
-    //fmt.Printf(token)
+    fmt.Printf(response)
+    fmt.Printf("\n")
+    fmt.Printf(idEmergency)
+    fmt.Printf("\n")
+    fmt.Printf(token)
+    fmt.Printf("\n")
 
     rep := []string{token, response}
     repartiteur[idEmergency] <- rep
@@ -201,6 +206,7 @@ func broadcastInit(msg map[string]interface{}, address string, id string, lvlEme
 }
 
 func listenResponse(id string, numberNecessary int) {
+    fmt.Println("GOROUTINE EMERGENCE ID = " + id)
     c := repartiteur[id]
     inCharge := []string{}
     for {
@@ -209,6 +215,7 @@ func listenResponse(id string, numberNecessary int) {
         case "OK" :
             inCharge = append(inCharge, rep[0])
             tokenAction = append(tokenAction, rep[0])
+            fmt.Println("*** TOKEN ACTION : " + rep[0])
             t := []string{rep[0]}
             r := map[string]string{
                 "msg" : "go go go",
@@ -224,7 +231,7 @@ func listenResponse(id string, numberNecessary int) {
         }
         if len(inCharge) == numberNecessary {
             memo[id] = inCharge
-        return
+            return
         }
     }
 }
@@ -235,7 +242,7 @@ func sendAndroids(tokens []string, msg map[string]interface{}) {
     c.Send()
 
     //if err == nil {
-    //status.PrintResults()
+    //    status.PrintResults()
     //} else {
     //    fmt.Println(err)
     //}
